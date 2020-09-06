@@ -299,6 +299,9 @@ module.exports = function (webpackEnv) {
         }),
         ...(modules.webpackAliases || {}),
         '@store': path.resolve(__dirname, '../', 'src', 'store'),
+        '@pages': path.resolve(__dirname, '../', 'src', 'pages'),
+        '@components': path.resolve(__dirname, '../', 'src', 'components'),
+        '@services': path.resolve(__dirname, '../', 'src', 'services'),
       },
       plugins: [
         // Adds support for installing with Plug'n'Play, leading to faster installs and adding
