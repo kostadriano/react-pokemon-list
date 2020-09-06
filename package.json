@@ -116,6 +116,13 @@
     ],
     "modulePaths": [],
     "moduleNameMapper": {
+      "@store/(.*)":"<rootDir>/src/store/$1",
+      "@pages/(.*)":"<rootDir>/src/pages/$1",
+      "@components/(.*)":"<rootDir>/src/components/$1",
+      "@services/(.*)":"<rootDir>/src/services/$1",
+      "@utils/(.*)":"<rootDir>/src/utils/$1",
+      "@repositories/(.*)":"<rootDir>/src/repositories/$1",
+      "@domain/(.*)":"<rootDir>/src/domain/$1",
       "^react-native$": "react-native-web",
       "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
     },
