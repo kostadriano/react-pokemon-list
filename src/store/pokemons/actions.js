@@ -13,7 +13,13 @@ export const fetchPokemons = () =>
 
       const { results } = await Pokemon.getPokemons();
 
-      dispatch(updatePokemonsSucces(results));
+      const pokemons = await Promise.all(
+        results.map(async ({ name }) =>
+          Pokemon.deserializePokemonData(await Pokemon.getPokemon(name))
+        )
+      )
+
+      dispatch(updatePokemonsSucces(pokemons));
     }
     catch (error) {
       console.error(error);

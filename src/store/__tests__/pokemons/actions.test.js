@@ -50,7 +50,9 @@ describe('Pokemons Actions', () => {
 
   describe('async actions', () => {
     const mockedPokemonDomain = {
-      getPokemons: jest.fn(() => ({ results: [] }))
+      getPokemons: jest.fn(() => ({ results: [] })),
+      getPokemon: jest.fn((value) => value),
+      deserializePokemonData: jest.fn((value) => value)
     }
 
     const mockedDispatch = jest.fn();
@@ -69,7 +71,9 @@ describe('Pokemons Actions', () => {
         ];
 
         const mockedPokemonDomain = {
-          getPokemons: jest.fn(() => ({ results: pokemons }))
+          getPokemons: jest.fn(() => ({ results: pokemons })),
+          getPokemon: jest.fn((name) => ({ name })),
+          deserializePokemonData: jest.fn((value) => value)
         }
 
         it('dispatch updatePokemonsSucces with pokemons results', async () => {
@@ -82,7 +86,9 @@ describe('Pokemons Actions', () => {
 
       describe('on fail', () => {
         const mockedPokemonDomain = {
-          getPokemons: jest.fn(() => new Promise((resolve, reject) => reject()))
+          getPokemons: jest.fn(() => new Promise((resolve, reject) => reject())),
+          getPokemon: jest.fn(),
+          deserializePokemonData: jest.fn()
         }
 
         it('dispatch finishFetchPokemons', async () => {
