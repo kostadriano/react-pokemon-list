@@ -14,6 +14,11 @@ export const Card = styled.div(
     boxShadow: '0 2px 12px 0 rgba(0,0,0,.5)',
     boxSize: 'border-box',
     flexGrow: '1',
+    '&:hover': {
+      transform: 'scale(1.05)',
+      boxShadow: '8px 15px 15px 0 rgba(0,0,0,.8)',
+      cursor: 'pointer'
+    }
   }),
   compose(space, color, width)
 )
