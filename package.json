@@ -126,6 +126,7 @@
       "@utils/(.*)": "<rootDir>/src/utils/$1",
       "@repositories/(.*)": "<rootDir>/src/repositories/$1",
       "@domain/(.*)": "<rootDir>/src/domain/$1",
+      "@assets/(.*)": "<rootDir>/src/assets/$1",
       "^react-native$": "react-native-web",
       "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
     },
@@ -150,5 +151,8 @@
     "presets": [
       "react-app"
     ]
+  },
+  "devDependencies": {
+    "redux-mock-store": "^1.5.4"
   }
 }

@@ -7,6 +7,7 @@ import { ModalProvider } from 'styled-react-modal';
 import Home from '@pages/Home';
 import GlobalStyle from '@components/GlobalStyle'
 import AppContainer from '@components/AppContainer';
+import LoadingComponent from '@components/LoadingComponent';
 
 import store from '@store';
 import theme from './theme';
@@ -19,6 +20,8 @@ const App = () => (
         <AppContainer>
           <Home />
         </AppContainer>
+
+        <LoadingComponent />
       </ModalProvider>
     </ThemeProvider>
   </Provider>
