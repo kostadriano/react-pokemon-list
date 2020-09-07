@@ -1,101 +1,229 @@
 import types from '../../pokemons/types';
 
 import * as actions from '../../pokemons/actions';
+import * as loadingActions from '../../loading/actions';
 
 const {
-  FINISH_FETCH_POKEMONS,
-  START_FETCH_POKEMONS,
   UPDATE_POKEMONS_SUCCESS,
+  UPDATE_POKEMON_SUCCESS,
 } = types;
 
+const pokemons = [
+  { name: 'squirtle' },
+  { name: 'bulbasaur' },
+  { name: 'charizard' },
+]
 
 describe('Pokemons Actions', () => {
   describe('sync actions', () => {
-    describe('updatePokemonsSucces', () => {
+    describe('updatePokemonsSuccess', () => {
       it('creates UPDATE_POKEMONS_SUCCESS action', () => {
-        const pokemons = [
-          { name: 'pokemon1' },
-          { name: 'pokemon2' },
-        ];
+        const count = 5;
 
         const expectedAction = {
           type: UPDATE_POKEMONS_SUCCESS,
+          payload: { pokemons, count }
+        }
+
+        const actionReturn = actions.updatePokemonsSucces({ pokemons, count });
+
+        expect(actionReturn).toEqual(expectedAction);
+      });
+    });
+
+    describe('updatePokemonSuccess', () => {
+      it('creates UPDATE_POKEMON_SUCCESS action', () => {
+        const expectedAction = {
+          type: UPDATE_POKEMON_SUCCESS,
           payload: pokemons
         }
 
-        expect(actions.updatePokemonsSucces(pokemons)).toEqual(expectedAction);
-      });
-    });
+        const actionReturn = actions.updatePokemonSucces(pokemons);
 
-    describe('startFetchPokemons', () => {
-      it('creates START_FETCH_POKEMONS action', () => {
-        const expectedAction = {
-          type: START_FETCH_POKEMONS,
-        }
-
-        expect(actions.startFetchPokemons()).toEqual(expectedAction);
-      });
-    });
-
-    describe('finishFetchPokemons', () => {
-      it('creates FINISH_FETCH_POKEMONS action', () => {
-        const expectedAction = {
-          type: FINISH_FETCH_POKEMONS,
-        }
-
-        expect(actions.finishFetchPokemons()).toEqual(expectedAction);
+        expect(actionReturn).toEqual(expectedAction);
       });
     });
   });
 
   describe('async actions', () => {
-    const mockedPokemonDomain = {
-      getPokemons: jest.fn(() => ({ results: [] })),
-      getPokemon: jest.fn((value) => value),
-      deserializePokemonData: jest.fn((value) => value)
-    }
+    let mockedDispatch;
 
-    const mockedDispatch = jest.fn();
+    beforeEach(() => {
+      mockedDispatch = jest.fn();
+    })
 
     describe('fetchPokemons', () => {
-      it('dispatch startFetchPokemons', async () => {
-        await actions.fetchPokemons()(mockedDispatch, null, { Pokemon: mockedPokemonDomain })
+      describe('when count is bigger then list size', () => {
+        const mockedPokemonDomain = {
+          getPokemonsNames: jest.fn(() => ({ results: [], count: 1000 })),
+          getAllPokemons: jest.fn(),
+        }
 
-        expect(mockedDispatch).toHaveBeenCalledWith(actions.startFetchPokemons());
+        describe('when loading is false', () => {
+          const mockedGetState = jest.fn(() => ({
+            pokemons: {
+              list: [1, 2, 3],
+              count: 1000
+            },
+            loading: false
+          }))
+
+          it('dispatch startLoading', async () => {
+            await actions.fetchPokemons()(mockedDispatch, mockedGetState, { Pokemon: mockedPokemonDomain })
+            expect(mockedDispatch).toHaveBeenCalledWith(loadingActions.startLoading());
+          });
+        });
+
+        describe('when loading is true', () => {
+          const mockedGetState = jest.fn(() => ({
+            pokemons: {
+              list: [1, 2, 3],
+              count: 1000
+            },
+            loading: true
+          }))
+
+          it('do not dispatch startLoading', async () => {
+            await actions.fetchPokemons()(mockedDispatch, mockedGetState, { Pokemon: mockedPokemonDomain })
+            expect(mockedDispatch).not.toHaveBeenCalledWith(loadingActions.startLoading());
+          });
+        });
+      });
+
+      describe('when count is smaller then list size', () => {
+        const mockedPokemonDomain = {
+          getPokemonsNames: jest.fn(() => ({ results: [], count: 1000 })),
+          getAllPokemons: jest.fn(),
+        }
+
+        const mockedGetState = jest.fn(() => ({
+          pokemons: {
+            list: [1, 2, 3],
+            count: 1
+          },
+          loading: false
+        }))
+
+        it('do not dispatch startLoading', async () => {
+          await actions.fetchPokemons()(mockedDispatch, mockedGetState, { Pokemon: mockedPokemonDomain })
+          expect(mockedDispatch).not.toHaveBeenCalledWith(loadingActions.startLoading());
+        });
       });
 
       describe('on success', () => {
-        const pokemons = [
-          { name: 'pokemon1' },
-          { name: 'pokemon2' },
-        ];
+        const mockedGetState = jest.fn(() => ({
+          pokemons: {
+            list: [],
+            count: 1000,
+          },
+          loading: false
+        }))
 
-        const mockedPokemonDomain = {
-          getPokemons: jest.fn(() => ({ results: pokemons })),
-          getPokemon: jest.fn((name) => ({ name })),
-          deserializePokemonData: jest.fn((value) => value)
+        const getPokemonsNamesReturn = {
+          results: pokemons,
+          count: 1000
         }
 
-        it('dispatch updatePokemonsSucces with pokemons results', async () => {
-          await actions.fetchPokemons()(mockedDispatch, null, { Pokemon: mockedPokemonDomain })
+        const mockedPokemonDomain = {
+          getPokemonsNames: jest.fn(() => getPokemonsNamesReturn),
+          getAllPokemons: jest.fn(data => data),
+        }
 
-          expect(mockedDispatch).toHaveBeenCalledWith(actions.updatePokemonsSucces(pokemons));
+        it('dispatch updatePokemonsSuccess with pokemons results', async () => {
+          await actions.fetchPokemons()(mockedDispatch, mockedGetState, { Pokemon: mockedPokemonDomain })
 
+          expect(mockedDispatch).toHaveBeenCalledWith(actions.updatePokemonsSucces({
+            pokemons: getPokemonsNamesReturn.results,
+            count: getPokemonsNamesReturn.count
+          }));
         });
       });
 
       describe('on fail', () => {
         const mockedPokemonDomain = {
-          getPokemons: jest.fn(() => new Promise((resolve, reject) => reject())),
-          getPokemon: jest.fn(),
-          deserializePokemonData: jest.fn()
+          getPokemonsNames: jest.fn(() => new Promise((resolve, reject) => reject())),
+          getAllPokemons: jest.fn(),
         }
 
-        it('dispatch finishFetchPokemons', async () => {
-          await actions.fetchPokemons()(mockedDispatch, null, { Pokemon: mockedPokemonDomain })
+        const mockedGetState = jest.fn(() => ({
+          pokemons: {
+            list: [],
+            count: 1000,
+          },
+          loading: false
+        }))
 
-          expect(mockedDispatch).toHaveBeenCalledWith(actions.finishFetchPokemons());
+        it('dispatch finishLoading', async () => {
+          await actions.fetchPokemons()(mockedDispatch, mockedGetState, { Pokemon: mockedPokemonDomain })
 
+          expect(mockedDispatch).toHaveBeenCalledWith(loadingActions.finishLoading());
+        });
+      });
+    });
+
+    describe('fetchPokemonData', () => {
+      const pokemons = [
+        { name: 'squirtle' },
+        { name: 'bulbasaur' },
+        { name: 'charizard' },
+      ]
+
+      const mockedAbilityDomain = {
+        getAbilities: jest.fn(() => [])
+      }
+
+      const mockedPokemonDomain = {
+        getForm: jest.fn(() => []),
+        find: jest.fn((a, b) => pokemons[0])
+      }
+
+      const mockedGetState = jest.fn(() => ({
+        pokemons: {
+          list: pokemons
+        }
+      }))
+
+      it('dispatches startLoading', async () => {
+        await actions.fetchPokemonData(1)(mockedDispatch, mockedGetState, { Pokemon: mockedPokemonDomain, Ability: mockedAbilityDomain })
+        expect(mockedDispatch).toHaveBeenCalledWith(loadingActions.startLoading());
+      });
+
+      describe('when pokemon is not fetched yet', () => {
+        const pokemon = { name: 'a', fetched: false };
+
+        const mockedPokemonDomain = {
+          getForm: jest.fn(() => []),
+          find: jest.fn((a, b) => pokemon)
+        }
+
+        it('call updatePokemonSucces', async () => {
+          const mockedDispatch = jest.fn();
+
+          await actions.fetchPokemonData(1)(mockedDispatch, mockedGetState, { Pokemon: mockedPokemonDomain, Ability: mockedAbilityDomain })
+
+          const updatedPokemon = {
+            abilities: [],
+            fetched: true,
+            forms: [],
+            name: pokemon.name
+          }
+
+          expect(mockedDispatch).toHaveBeenCalledWith(actions.updatePokemonSucces(updatedPokemon));
+        });
+      });
+
+      describe('when pokemon is already fetched', () => {
+        const mockedPokemonDomain = {
+          getForm: jest.fn(() => []),
+          find: jest.fn((a, b) => ({ name: 'a', fetched: true }))
+        }
+
+        it('do not call updatePokemonSucces', async () => {
+          const mockedDispatch = jest.fn();
+
+          await actions.fetchPokemonData(1)(mockedDispatch, mockedGetState, { Pokemon: mockedPokemonDomain, Ability: mockedAbilityDomain })
+
+          expect(mockedDispatch).not.toHaveBeenCalledWith(actions.updatePokemonSucces());
         });
       });
     });

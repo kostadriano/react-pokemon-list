@@ -1,5 +1,7 @@
 import React from 'react';
 
+import PokemonsList from './components/PokemonsList';
+
 import Image from '@components/ui/Image';
 import { Box, FlexBox } from '@components/ui/Box';
 
@@ -20,6 +22,8 @@ const Home = () =>
         alt="React Pokelist Logo"
       />
     </Box>
+
+    <PokemonsList />
   </FlexBox>
 
 export default Home;

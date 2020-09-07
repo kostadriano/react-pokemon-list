@@ -1,33 +1,43 @@
 import PokemonsRepository from '@repositories/pokemonsRepository';
 
-export const getPokemons = async () => PokemonsRepository.getAll();
+export const getPokemonsNames = async (offset = 0) => PokemonsRepository.getAll(offset);
 
-export const getPokemon = async name => PokemonsRepository.getOne(name);
+export const getAllPokemons = async pokemons => await Promise.all(pokemons.map(({ name }) => getPokemon(name)));
+
+export const getPokemon = async name => deserializePokemonData(await PokemonsRepository.getOne(name));
+
+export const getForm = async ({ name }) => deserializePokemonForm(await PokemonsRepository.getForm(name));
+
+export const find = (pokemons, id) => pokemons.find((pokemon) => pokemon.id === id)
 
 const transformAttributes = {
-  types: (types) => types.map(({ type: { name } }) => name),
-  stats: (stats) => stats.map(({ base_stat, stat: { name } }) => ({ [name]: base_stat })),
+  abilities: abilities => abilities.map(({ ability: { name } }) => ({ name })),
+  types: types => types.map(({ type: { name } }) => name),
+  stats: stats => stats.map(({ base_stat, stat: { name } }) => ({ name, value: base_stat })),
+  fetched: () => false,
 }
+
+export const deserializePokemonForm = ({ sprites }) => sprites;
 
 const transformAttribute = (attribute, value) =>
   transformAttributes[attribute]
     ? transformAttributes[attribute](value)
     : value
 
-const derializeDataSelectedAttributes = [
+const acceptedAttributes = [
   'abilities',
-  'forms',
   'height',
   'id',
   'name',
   'sprites',
   'stats',
   'weight',
-  'types'
+  'types',
+  'fetched'
 ];
 
 export const deserializePokemonData = data =>
-  derializeDataSelectedAttributes.reduce((pokemon, attribute) => {
+  acceptedAttributes.reduce((pokemon, attribute) => {
     pokemon[attribute] = transformAttribute(attribute, data[attribute]);
 
     return pokemon;

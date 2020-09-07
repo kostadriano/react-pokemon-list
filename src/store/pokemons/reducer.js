@@ -1,36 +1,36 @@
 import types from './types';
+import updateIfSameId from '@utils/updateIfSameId';
 
 const {
-  FINISH_FETCH_POKEMONS,
-  START_FETCH_POKEMONS,
   UPDATE_POKEMONS_SUCCESS,
+  UPDATE_POKEMON_SUCCESS
 } = types;
 
 const initialState = {
   list: [],
-  fetching: false,
+  count: 0,
 }
 
 const pokemonsReducer = (state = initialState, { type, payload } = {}) => {
   switch (type) {
-    case START_FETCH_POKEMONS:
-      return {
-        ...state,
-        fetching: true
-      };
-    case FINISH_FETCH_POKEMONS:
-      return {
-        ...state,
-        fetching: false
-      };
     case UPDATE_POKEMONS_SUCCESS:
       return {
+        count: payload.count,
         list: [
           ...state.list,
-          ...payload
-        ],
-        fetching: false
+          ...payload.pokemons
+        ]
       };
+    case UPDATE_POKEMON_SUCCESS:
+      return {
+        ...state,
+        list: state.list.map(updateIfSameId(payload.id,
+          pokemon => ({
+            ...pokemon,
+            ...payload
+          })
+        ))
+      }
     default:
       return state;
   }
