@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchPokemons } from '@store/pokemons/actions';
 
 import { FlexBox } from '@components/ui/Box';
+import IntersectionObserver from '@components/IntersectionObserver';
 
 import PokemonCard from '../PokemonCard';
 import PokemonInfoModal from '../PokemonInfoModal'
@@ -50,6 +51,8 @@ const PokemonsList = () => {
           />
         )}
       </FlexBox>
+
+      <IntersectionObserver handleIntersection={fetchMorePokemons} />
 
       <PokemonInfoModal
         handleClose={handlePokemonInfoModalClose}
