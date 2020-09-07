@@ -3,7 +3,7 @@ import PokemonCardHeader from './PokemonCardHeader';
 import PokemonCardContent from './PokemonCardContent';
 import Card from '@components/ui/Card';
 
-const PokemonCard = ({ pokemon }) =>
+const PokemonCard = ({ pokemon, onClick }) =>
   <Card
     margin={3}
     width={{
@@ -13,6 +13,7 @@ const PokemonCard = ({ pokemon }) =>
       lg: 1 / 5
     }}
     title="View more"
+    onClick={onClick}
   >
     <PokemonCardHeader
       pokemon={pokemon}
