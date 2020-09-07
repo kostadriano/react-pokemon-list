@@ -1,9 +1,9 @@
 import StyledReactModal from 'styled-react-modal';
+import { layout } from 'styled-system'
 
-const Modal = StyledReactModal.styled(({ theme: { colors } }) => ({
-  width: '20rem',
-  height: '20rem',
-  backgroundColor: colors.white
-}));
+const Modal = StyledReactModal.styled(
+  { width: '50%' },
+  layout
+);
 
 export default Modal;
