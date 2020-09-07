@@ -11,11 +11,13 @@ const PokemonForms = ({ forms }) =>
 
     <FlexBox paddingX={2} flexWrap='wrap'>
       {Object.keys(forms).map(form =>
-        <Image
-          key={form}
-          src={forms[form]}
-          alt={form}
-        />
+        <a href={forms[form]} target="_blank" rel="noopener noreferrer">
+          <Image
+            key={form}
+            src={forms[form]}
+            alt={form}
+          />
+        </a>
       )}
     </FlexBox>
   </Box>

@@ -13,8 +13,8 @@ export const TableBody = styled.tbody({});
 export const TableCell = styled.td(({ theme: { colors } }) =>
   ({
     border: '1px solid',
-    paddingRight: 8,
-    paddingLeft: 8,
+    paddingRight: 32,
+    paddingLeft: 16,
     paddingTop: 4,
     paddingBottom: 4,
     borderColor: colors.lightGray
